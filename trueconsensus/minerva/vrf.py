@@ -65,7 +65,7 @@ def MGF1(mgfSeed, maskLen, Hlen=32, Hash=SHA256.new):
         T=b''
         for counter in range(int(ceil(maskLen/Hlen))):
             C = I2OSP(counter, 4)
-            T = T + Hash(mgfSeed+C).digest()
+            T = T + Hash(bytes(mgfSeed, encoding='utf-8')+C).digest()
         return T[:maskLen]
 
 
