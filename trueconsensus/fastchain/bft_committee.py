@@ -18,6 +18,7 @@
 
 import os
 import uuid
+import json
 import random
 from db.backends.level import LevelDB
 
@@ -63,13 +64,6 @@ class DailyOffChainConsensus(object):
 
 class NodeBFT(Node):
     '''
-    @types:
-    committee member
-    committee non-member
-
-    @state:
-    corrup, honest(pre-corrupt, honest)
-
     '''
     R = 0
     LOGs = defaultdict(list)
@@ -79,10 +73,22 @@ class NodeBFT(Node):
 
     def __init__(self, id=None, type=None):
         self.NodeId = id
-        self._type = 'BFTmember'
+        self.isBFTNode = True
         self.new_row = namedtuple('row', ['R', 'l', 'txn'])
         # TODO: maybe use ctypes.Structure or struct.Struct ?
         self.nonce = 0
+
+    @property
+    def describe(self):
+        return json.dumps({
+            "R": self.R,
+            "csize": self.csize,
+            "BFT Member?": self.isBFTNode,
+            "processing nonce?": self.nonce,
+        })
+
+    def __str__(self):
+        return self.describe
 
     def launch_boot_nodes(self):
         return
@@ -107,6 +113,12 @@ class ViewChangeInit(object):
 
 class BFTcommittee(object):
     '''
+    member types:
+    committee member
+    committee non-member
+
+    member states:
+    corrup, honest(pre-corrupt, honest)
     '''
 
     def __init__(self, R, view, node_addresses):
@@ -114,16 +126,20 @@ class BFTcommittee(object):
         self.view = view
         self.nodes = node_addresses
         self.log = []
-        # TODO: calculate csize and sec_param
-        sefl.chain_size = R * csize + LAMBDA
+
+    @property
+    def is_empty(self):
+        if len(self.nodes) is 0:
+            return True
+        return False
 
     def call_to_viewchange(self):
         """
         complains to snailchain, init viewchange
         """
         VC = ViewChangeInit(self.nodes)
-        response = None
         start = time.time()
+        response = None
         while true:
             response = VC.wait_for_reply()
             if response is not None:
