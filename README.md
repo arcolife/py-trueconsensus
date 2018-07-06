@@ -86,6 +86,20 @@ from . import request_pb2 as request__pb2
 Then,
 
 ```
+sudo mkdir /etc/truechain /var/lib/truechain /var/log/truechain
+sudo chown -R $USER /etc/truechain /var/lib/truechain /var/log/truechain
+
+# add a sample local config
+echo '
+import os
+
+CFG_YAML_PATH = "/etc/truechain/tunables.yaml"
+CFG_GENERAL_PATH = "/etc/truechain/logistics.cfg"
+
+# list of boot nodes
+PEER_NETWORK_FILE = "/etc/truechain/hosts"
+' > /etc/truechain/local_config.py
+
 # generate asymm keypairs
 python -m trueconsensus.utils.make_keys
 
