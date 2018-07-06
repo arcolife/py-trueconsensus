@@ -19,10 +19,48 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='request.proto',
   package='fastchain',
   syntax='proto3',
-  serialized_pb=_b('\n\rrequest.proto\x12\tfastchain\"\xe3\x01\n\x07Request\x12\'\n\x05inner\x18\x01 \x01(\x0b\x32\x18.fastchain.Request.Inner\x12\x0b\n\x03\x64ig\x18\x02 \x01(\x0c\x12\x0b\n\x03sig\x18\x03 \x01(\x0c\x12\r\n\x05outer\x18\x04 \x01(\x0c\x12\x0c\n\x04\x64\x65st\x18\x05 \x01(\x05\x1ax\n\x05Inner\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0b\n\x03seq\x18\x02 \x01(\x05\x12\x0c\n\x04view\x18\x03 \x01(\x05\x12\x0c\n\x04type\x18\x04 \x01(\t\x12\'\n\x05\x62lock\x18\x05 \x01(\x0b\x32\x18.fastchain.TruePbftBlock\x12\x11\n\ttimestamp\x18\x06 \x01(\x05\"*\n\x07History\x12\x1f\n\x03req\x18\x01 \x03(\x0b\x32\x12.fastchain.Request\"\x10\n\x0e\x43heckLeaderReq\"\"\n\x0f\x43heckLeaderResp\x12\x0f\n\x07message\x18\x01 \x01(\x08\"/\n\x05Nodes\x12&\n\x05nodes\x18\x01 \x03(\x0b\x32\x17.fastchain.TruePbftNode\"\xa3\x01\n\x07TxnData\x12\x14\n\x0c\x41\x63\x63ountNonce\x18\x01 \x01(\x04\x12\r\n\x05Price\x18\x02 \x01(\x03\x12\x10\n\x08GasLimit\x18\x03 \x01(\x03\x12\x11\n\tRecipient\x18\x04 \x01(\x0c\x12\x0e\n\x06\x41mount\x18\x05 \x01(\x03\x12\x0f\n\x07payload\x18\x06 \x01(\x0c\x12\t\n\x01V\x18\x07 \x01(\x03\x12\t\n\x01R\x18\x08 \x01(\x03\x12\t\n\x01S\x18\t \x01(\x03\x12\x0c\n\x04Hash\x18\n \x01(\x0c\"-\n\x07Payload\x12\x0f\n\x07txnType\x18\x01 \x01(\t\x12\x11\n\tvotecount\x18\x02 \x01(\x05\"M\n\x0bTransaction\x12 \n\x04\x64\x61ta\x18\x01 \x01(\x0b\x32\x12.fastchain.TxnData\x12\x0c\n\x04\x64\x65st\x18\x02 \x01(\x05\x12\x0e\n\x06source\x18\x03 \x01(\x05\"V\n\x13TruePbftBlockHeader\x12\x0e\n\x06Number\x18\x01 \x01(\x03\x12\x10\n\x08GasLimit\x18\x02 \x01(\x03\x12\x0f\n\x07GasUsed\x18\x03 \x01(\x03\x12\x0c\n\x04Time\x18\x04 \x01(\x03\"z\n\rTruePbftBlock\x12.\n\x06header\x18\x01 \x01(\x0b\x32\x1e.fastchain.TruePbftBlockHeader\x12,\n\x0cTransactions\x18\x02 \x03(\x0b\x32\x16.fastchain.Transaction\x12\x0b\n\x03sig\x18\x03 \x03(\t\"=\n\x0cTruePbftNode\x12\x0c\n\x04\x61\x64\x64r\x18\x01 \x01(\t\x12\x0e\n\x06pubkey\x18\x02 \x01(\t\x12\x0f\n\x07privkey\x18\x03 \x01(\t\"i\n\tTrueChain\x12(\n\x06\x62locks\x18\x01 \x03(\x0b\x32\x18.fastchain.TruePbftBlock\x12\x32\n\nlastHeader\x18\x02 \x01(\x0b\x32\x1e.fastchain.TruePbftBlockHeader\"*\n\x0bGenericResp\x12\x0b\n\x03msg\x18\x01 \x01(\t\x12\x0e\n\x06status\x18\x02 \x01(\x05\"\x07\n\x05\x45mpty2\xbb\x01\n\tFastChain\x12\x41\n\rNewTxnRequest\x12\x16.fastchain.Transaction\x1a\x16.fastchain.GenericResp\"\x00\x12\x35\n\x05\x43heck\x12\x12.fastchain.Request\x1a\x16.fastchain.GenericResp\"\x00\x12\x34\n\x04Send\x12\x12.fastchain.Request\x1a\x16.fastchain.GenericResp\"\x00\x32\x8e\x01\n\x0e\x43lientReceiver\x12\x41\n\x11PbftReplyReceiver\x12\x18.fastchain.TruePbftBlock\x1a\x10.fastchain.Empty\"\x00\x12\x39\n\x05\x43heck\x12\x16.fastchain.GenericResp\x1a\x16.fastchain.GenericResp\"\x00\x62\x06proto3')
+  serialized_pb=_b('\n\rrequest.proto\x12\tfastchain\"=\n\x04Hash\x12\x0c\n\x04hash\x18\x01 \x01(\x0c\x12\'\n\x05\x62lock\x18\x02 \x01(\x0b\x32\x18.fastchain.TruePbftBlock\"\xe3\x01\n\x07Request\x12\'\n\x05inner\x18\x01 \x01(\x0b\x32\x18.fastchain.Request.Inner\x12\x0b\n\x03\x64ig\x18\x02 \x01(\x0c\x12\x0b\n\x03sig\x18\x03 \x01(\x0c\x12\r\n\x05outer\x18\x04 \x01(\x0c\x12\x0c\n\x04\x64\x65st\x18\x05 \x01(\x05\x1ax\n\x05Inner\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0b\n\x03seq\x18\x02 \x01(\x05\x12\x0c\n\x04view\x18\x03 \x01(\x05\x12\x0c\n\x04type\x18\x04 \x01(\t\x12\'\n\x05\x62lock\x18\x05 \x01(\x0b\x32\x18.fastchain.TruePbftBlock\x12\x11\n\ttimestamp\x18\x06 \x01(\x05\"*\n\x07History\x12\x1f\n\x03req\x18\x01 \x03(\x0b\x32\x12.fastchain.Request\"\x10\n\x0e\x43heckLeaderReq\"\"\n\x0f\x43heckLeaderResp\x12\x0f\n\x07message\x18\x01 \x01(\x08\"/\n\x05Nodes\x12&\n\x05nodes\x18\x01 \x03(\x0b\x32\x17.fastchain.TruePbftNode\"\xa3\x01\n\x07TxnData\x12\x14\n\x0c\x41\x63\x63ountNonce\x18\x01 \x01(\x04\x12\r\n\x05Price\x18\x02 \x01(\x03\x12\x10\n\x08GasLimit\x18\x03 \x01(\x03\x12\x11\n\tRecipient\x18\x04 \x01(\x0c\x12\x0e\n\x06\x41mount\x18\x05 \x01(\x03\x12\x0f\n\x07payload\x18\x06 \x01(\x0c\x12\t\n\x01V\x18\x07 \x01(\x03\x12\t\n\x01R\x18\x08 \x01(\x03\x12\t\n\x01S\x18\t \x01(\x03\x12\x0c\n\x04Hash\x18\n \x01(\x0c\"-\n\x07Payload\x12\x0f\n\x07txnType\x18\x01 \x01(\t\x12\x11\n\tvotecount\x18\x02 \x01(\x05\"M\n\x0bTransaction\x12 \n\x04\x64\x61ta\x18\x01 \x01(\x0b\x32\x12.fastchain.TxnData\x12\x0c\n\x04\x64\x65st\x18\x02 \x01(\x05\x12\x0e\n\x06source\x18\x03 \x01(\x05\"\x80\x01\n\x13TruePbftBlockHeader\x12\x0e\n\x06Number\x18\x01 \x01(\x03\x12\x10\n\x08GasLimit\x18\x02 \x01(\x03\x12\x0f\n\x07GasUsed\x18\x03 \x01(\x03\x12\x0c\n\x04Time\x18\x04 \x01(\x03\x12\x13\n\x0bparent_hash\x18\x05 \x01(\x0c\x12\x13\n\x0buncles_hash\x18\x06 \x01(\x0c\"\xaa\x01\n\rTruePbftBlock\x12.\n\x06header\x18\x01 \x01(\x0b\x32\x1e.fastchain.TruePbftBlockHeader\x12,\n\x0cTransactions\x18\x02 \x03(\x0b\x32\x16.fastchain.Transaction\x12.\n\x06uncles\x18\x03 \x03(\x0b\x32\x1e.fastchain.TruePbftBlockHeader\x12\x0b\n\x03sig\x18\x04 \x03(\t\"=\n\x0cTruePbftNode\x12\x0c\n\x04\x61\x64\x64r\x18\x01 \x01(\t\x12\x0e\n\x06pubkey\x18\x02 \x01(\t\x12\x0f\n\x07privkey\x18\x03 \x01(\t\"i\n\tTrueChain\x12(\n\x06\x62locks\x18\x01 \x03(\x0b\x32\x18.fastchain.TruePbftBlock\x12\x32\n\nlastHeader\x18\x02 \x01(\x0b\x32\x1e.fastchain.TruePbftBlockHeader\"*\n\x0bGenericResp\x12\x0b\n\x03msg\x18\x01 \x01(\t\x12\x0e\n\x06status\x18\x02 \x01(\x05\"\x07\n\x05\x45mpty2\xbb\x01\n\tFastChain\x12\x41\n\rNewTxnRequest\x12\x16.fastchain.Transaction\x1a\x16.fastchain.GenericResp\"\x00\x12\x35\n\x05\x43heck\x12\x12.fastchain.Request\x1a\x16.fastchain.GenericResp\"\x00\x12\x34\n\x04Send\x12\x12.fastchain.Request\x1a\x16.fastchain.GenericResp\"\x00\x32I\n\x0eSerializerTest\x12\x37\n\x08TestHash\x12\x18.fastchain.TruePbftBlock\x1a\x0f.fastchain.Hash\"\x00\x32\x8e\x01\n\x0e\x43lientReceiver\x12\x41\n\x11PbftReplyReceiver\x12\x18.fastchain.TruePbftBlock\x1a\x10.fastchain.Empty\"\x00\x12\x39\n\x05\x43heck\x12\x16.fastchain.GenericResp\x1a\x16.fastchain.GenericResp\"\x00\x62\x06proto3')
 )
 
 
+
+
+_HASH = _descriptor.Descriptor(
+  name='Hash',
+  full_name='fastchain.Hash',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='hash', full_name='fastchain.Hash.hash', index=0,
+      number=1, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='block', full_name='fastchain.Hash.block', index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=28,
+  serialized_end=89,
+)
 
 
 _REQUEST_INNER = _descriptor.Descriptor(
@@ -86,8 +124,8 @@ _REQUEST_INNER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=136,
-  serialized_end=256,
+  serialized_start=199,
+  serialized_end=319,
 )
 
 _REQUEST = _descriptor.Descriptor(
@@ -144,8 +182,8 @@ _REQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=29,
-  serialized_end=256,
+  serialized_start=92,
+  serialized_end=319,
 )
 
 
@@ -175,8 +213,8 @@ _HISTORY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=258,
-  serialized_end=300,
+  serialized_start=321,
+  serialized_end=363,
 )
 
 
@@ -199,8 +237,8 @@ _CHECKLEADERREQ = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=302,
-  serialized_end=318,
+  serialized_start=365,
+  serialized_end=381,
 )
 
 
@@ -230,8 +268,8 @@ _CHECKLEADERRESP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=320,
-  serialized_end=354,
+  serialized_start=383,
+  serialized_end=417,
 )
 
 
@@ -261,8 +299,8 @@ _NODES = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=356,
-  serialized_end=403,
+  serialized_start=419,
+  serialized_end=466,
 )
 
 
@@ -355,8 +393,8 @@ _TXNDATA = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=406,
-  serialized_end=569,
+  serialized_start=469,
+  serialized_end=632,
 )
 
 
@@ -393,8 +431,8 @@ _PAYLOAD = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=571,
-  serialized_end=616,
+  serialized_start=634,
+  serialized_end=679,
 )
 
 
@@ -438,8 +476,8 @@ _TRANSACTION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=618,
-  serialized_end=695,
+  serialized_start=681,
+  serialized_end=758,
 )
 
 
@@ -478,6 +516,20 @@ _TRUEPBFTBLOCKHEADER = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='parent_hash', full_name='fastchain.TruePbftBlockHeader.parent_hash', index=4,
+      number=5, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='uncles_hash', full_name='fastchain.TruePbftBlockHeader.uncles_hash', index=5,
+      number=6, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -490,8 +542,8 @@ _TRUEPBFTBLOCKHEADER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=697,
-  serialized_end=783,
+  serialized_start=761,
+  serialized_end=889,
 )
 
 
@@ -517,8 +569,15 @@ _TRUEPBFTBLOCK = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='sig', full_name='fastchain.TruePbftBlock.sig', index=2,
-      number=3, type=9, cpp_type=9, label=3,
+      name='uncles', full_name='fastchain.TruePbftBlock.uncles', index=2,
+      number=3, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='sig', full_name='fastchain.TruePbftBlock.sig', index=3,
+      number=4, type=9, cpp_type=9, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -535,8 +594,8 @@ _TRUEPBFTBLOCK = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=785,
-  serialized_end=907,
+  serialized_start=892,
+  serialized_end=1062,
 )
 
 
@@ -580,8 +639,8 @@ _TRUEPBFTNODE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=909,
-  serialized_end=970,
+  serialized_start=1064,
+  serialized_end=1125,
 )
 
 
@@ -618,8 +677,8 @@ _TRUECHAIN = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=972,
-  serialized_end=1077,
+  serialized_start=1127,
+  serialized_end=1232,
 )
 
 
@@ -656,8 +715,8 @@ _GENERICRESP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1079,
-  serialized_end=1121,
+  serialized_start=1234,
+  serialized_end=1276,
 )
 
 
@@ -680,10 +739,11 @@ _EMPTY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1123,
-  serialized_end=1130,
+  serialized_start=1278,
+  serialized_end=1285,
 )
 
+_HASH.fields_by_name['block'].message_type = _TRUEPBFTBLOCK
 _REQUEST_INNER.fields_by_name['block'].message_type = _TRUEPBFTBLOCK
 _REQUEST_INNER.containing_type = _REQUEST
 _REQUEST.fields_by_name['inner'].message_type = _REQUEST_INNER
@@ -692,8 +752,10 @@ _NODES.fields_by_name['nodes'].message_type = _TRUEPBFTNODE
 _TRANSACTION.fields_by_name['data'].message_type = _TXNDATA
 _TRUEPBFTBLOCK.fields_by_name['header'].message_type = _TRUEPBFTBLOCKHEADER
 _TRUEPBFTBLOCK.fields_by_name['Transactions'].message_type = _TRANSACTION
+_TRUEPBFTBLOCK.fields_by_name['uncles'].message_type = _TRUEPBFTBLOCKHEADER
 _TRUECHAIN.fields_by_name['blocks'].message_type = _TRUEPBFTBLOCK
 _TRUECHAIN.fields_by_name['lastHeader'].message_type = _TRUEPBFTBLOCKHEADER
+DESCRIPTOR.message_types_by_name['Hash'] = _HASH
 DESCRIPTOR.message_types_by_name['Request'] = _REQUEST
 DESCRIPTOR.message_types_by_name['History'] = _HISTORY
 DESCRIPTOR.message_types_by_name['CheckLeaderReq'] = _CHECKLEADERREQ
@@ -709,6 +771,13 @@ DESCRIPTOR.message_types_by_name['TrueChain'] = _TRUECHAIN
 DESCRIPTOR.message_types_by_name['GenericResp'] = _GENERICRESP
 DESCRIPTOR.message_types_by_name['Empty'] = _EMPTY
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
+
+Hash = _reflection.GeneratedProtocolMessageType('Hash', (_message.Message,), dict(
+  DESCRIPTOR = _HASH,
+  __module__ = 'request_pb2'
+  # @@protoc_insertion_point(class_scope:fastchain.Hash)
+  ))
+_sym_db.RegisterMessage(Hash)
 
 Request = _reflection.GeneratedProtocolMessageType('Request', (_message.Message,), dict(
 
@@ -824,8 +893,8 @@ _FASTCHAIN = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   options=None,
-  serialized_start=1133,
-  serialized_end=1320,
+  serialized_start=1288,
+  serialized_end=1475,
   methods=[
   _descriptor.MethodDescriptor(
     name='NewTxnRequest',
@@ -860,14 +929,38 @@ _sym_db.RegisterServiceDescriptor(_FASTCHAIN)
 DESCRIPTOR.services_by_name['FastChain'] = _FASTCHAIN
 
 
+_SERIALIZERTEST = _descriptor.ServiceDescriptor(
+  name='SerializerTest',
+  full_name='fastchain.SerializerTest',
+  file=DESCRIPTOR,
+  index=1,
+  options=None,
+  serialized_start=1477,
+  serialized_end=1550,
+  methods=[
+  _descriptor.MethodDescriptor(
+    name='TestHash',
+    full_name='fastchain.SerializerTest.TestHash',
+    index=0,
+    containing_service=None,
+    input_type=_TRUEPBFTBLOCK,
+    output_type=_HASH,
+    options=None,
+  ),
+])
+_sym_db.RegisterServiceDescriptor(_SERIALIZERTEST)
+
+DESCRIPTOR.services_by_name['SerializerTest'] = _SERIALIZERTEST
+
+
 _CLIENTRECEIVER = _descriptor.ServiceDescriptor(
   name='ClientReceiver',
   full_name='fastchain.ClientReceiver',
   file=DESCRIPTOR,
-  index=1,
+  index=2,
   options=None,
-  serialized_start=1323,
-  serialized_end=1465,
+  serialized_start=1553,
+  serialized_end=1695,
   methods=[
   _descriptor.MethodDescriptor(
     name='PbftReplyReceiver',

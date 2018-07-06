@@ -80,6 +80,48 @@ def add_FastChainServicer_to_server(servicer, server):
   server.add_generic_rpc_handlers((generic_handler,))
 
 
+class SerializerTestStub(object):
+  # missing associated documentation comment in .proto file
+  pass
+
+  def __init__(self, channel):
+    """Constructor.
+
+    Args:
+      channel: A grpc.Channel.
+    """
+    self.TestHash = channel.unary_unary(
+        '/fastchain.SerializerTest/TestHash',
+        request_serializer=request__pb2.TruePbftBlock.SerializeToString,
+        response_deserializer=request__pb2.Hash.FromString,
+        )
+
+
+class SerializerTestServicer(object):
+  # missing associated documentation comment in .proto file
+  pass
+
+  def TestHash(self, request, context):
+    # missing associated documentation comment in .proto file
+    pass
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
+
+def add_SerializerTestServicer_to_server(servicer, server):
+  rpc_method_handlers = {
+      'TestHash': grpc.unary_unary_rpc_method_handler(
+          servicer.TestHash,
+          request_deserializer=request__pb2.TruePbftBlock.FromString,
+          response_serializer=request__pb2.Hash.SerializeToString,
+      ),
+  }
+  generic_handler = grpc.method_handlers_generic_handler(
+      'fastchain.SerializerTest', rpc_method_handlers)
+  server.add_generic_rpc_handlers((generic_handler,))
+
+
 class ClientReceiverStub(object):
   """//Interface exposed by client
   service Client {

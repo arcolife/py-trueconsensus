@@ -49,6 +49,9 @@ __Recommended__: Use a python3 virtual environment
 virtualenv -p python3 venv
 source venv/bin/activate
 pip install -r requirements.txt
+
+# additional step for OSX
+$ brew install leveldb
 ```
 
 ##### Install Google's Protobuf

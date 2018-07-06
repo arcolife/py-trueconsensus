@@ -13,13 +13,13 @@ service FastChain {
 }
 
 service SerializerTest {
-    rpc TestHash(Block) returns (Hash) {}
+    rpc TestHash(TruePbftBlock) returns (Hash) {}
 }
  
 // Hash result 
 message Hash {
     bytes hash = 1;
-    Block block = 2;
+    TruePbftBlock block = 2;
 }
 
 // //Interface exposed by client
