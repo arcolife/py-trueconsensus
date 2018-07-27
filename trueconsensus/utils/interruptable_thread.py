@@ -3,9 +3,10 @@ import signal
 import time
 import sys
 
+from threading import active_count
 
 class InvalidOperationException(Exception):
-    pass    
+    pass
 
 
 # noinspection PyClassHasNoInit
@@ -31,20 +32,21 @@ class GlobalInterruptableThreadHandler:
 
     @staticmethod
     def sig_handler(signum, frame):
-        sys.stdout.write("handling signal: %s\n" % signum)
-        sys.exit(1)
-        sys.stdout.write("Kill signal (%s) detected. Stopping BFT node.." % signum)
-        sys.stdout.flush()
+        # sys.stdout.write("handling signal: %s\n" % signum)
+        # sys.stdout.write("Kill signal (%s) detected. Stopping BFT node.." % signum)
+        # sys.exit(1)
 
         # countdown = 1
         # print("Committing deliberate suicide in %s seconds" % countdown)
         # time.sleep(countdown)
         # import pdb; pdb.set_trace()
         for thread in GlobalInterruptableThreadHandler.threads:
+            sys.stdout.write("\nActive Thread Count: %s" % active_count())
+            sys.stdout.flush()
             # print("Active Thread Count: ", threading.active_count())
             thread.stop()
 
-        GlobalInterruptableThreadHandler.threads = []    
+        GlobalInterruptableThreadHandler.threads = []
 
 
 class InterruptableThread:
