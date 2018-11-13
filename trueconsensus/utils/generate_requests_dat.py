@@ -77,8 +77,8 @@ def gen_requests(max_requests, batch_size, f):
     print("keys_to_seq_tracker: ", keys_to_seq_tracker)
 
 if __name__ == '__main__':
-    max_requests = config_yaml["testbed_config"]["requests"]["max"]
-    batch_size = config_yaml["testbed_config"]["requests"]["batch_size"]
+    max_requests = config_yaml["testbed"]["requests"]["max"]
+    batch_size = config_yaml["testbed"]["requests"]["batch_size"]
     assert batch_size < max_requests
 
     print("Generating [%s] requests with batch size [%s]" %

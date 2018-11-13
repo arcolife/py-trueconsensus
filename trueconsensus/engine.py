@@ -204,8 +204,8 @@ class ThreadedExecution(InterruptableThread):
             0,
             N,
             block_size=block_size,
-            max_requests=config_yaml['testbed_config']['requests']['max'],
-            max_retries=config_yaml['testbed_config']['max_retries']
+            max_requests=config_yaml['testbed']['requests']['max'],
+            max_retries=config_yaml['testbed']['max_retries']
         )
 
         print("Active Thread Count: ", active_count())
@@ -293,7 +293,7 @@ class NonThreadedExecution(object):
 
     def init_server_socket(self, _id=None):
         """
-        triggers setup using testbed_config. Increments given server id
+        triggers setup using testbed. Increments given server id
         if that (ip, socket) from Replica List RL is already in use.
         """
         global N
@@ -310,11 +310,11 @@ class NonThreadedExecution(object):
 
     def launch(self):
         socket_obj, _id = self.init_server_socket(
-            _id=config_yaml["testbed_config"]["server_id_init"] - 1
+            _id=config_yaml["testbed"]["server_id_init"] - 1
         )
         n = node.Node(_id, 0, N,
-                      max_requests=config_yaml['testbed_config']['requests']['max'],
-                      max_retries=config_yaml['testbed_config']['max_retries'])
+                      max_requests=config_yaml['testbed']['requests']['max'],
+                      max_retries=config_yaml['testbed']['max_retries'])
         # n.init_keys(N)
         n.init_replica_map(socket_obj)
         n.server_loop()

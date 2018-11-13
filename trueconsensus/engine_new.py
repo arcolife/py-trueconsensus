@@ -75,7 +75,7 @@ countdown = 3 # time taken before node stops itself
 
 def init_server(_id=None):
     """
-    triggers setup using testbed_config. Increments given server id
+    triggers setup using testbed. Increments given server id
     if that (ip, socket) from Replica List RL is already in use.
     """
     global N
@@ -94,15 +94,15 @@ def init_server(_id=None):
             return s, c
 
 server, _id = init_server(
-    _id=config_yaml["testbed_config"]["server_id_init"] - 1
+    _id=config_yaml["testbed"]["server_id_init"] - 1
 )
 
 n = node.Node(
     _id, 
     0, 
     N,
-    max_requests=config_yaml['testbed_config']['requests']['max'],
-    max_retries=config_yaml['testbed_config']['max_retries']
+    max_requests=config_yaml['testbed']['requests']['max'],
+    max_retries=config_yaml['testbed']['max_retries']
 )
 
 

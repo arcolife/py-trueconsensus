@@ -123,9 +123,9 @@ IP_LIST = [l.strip() for l in network_file_content if l]
 KD = config_general.get("general", "pem_keystore_path")
 
 basePort = config_yaml["general"]["base_port"]
-N = config_yaml['testbed_config']['total'] - 1
+N = config_yaml['testbed']['total'] - 1
 
-CLIENT_ID = config_yaml["testbed_config"]["client_id"]
+CLIENT_ID = config_yaml["testbed"]["client_id"]
 
 # import pdb; pdb.set_trace()
 
@@ -136,4 +136,4 @@ CLIENT_ADDRESS = ((IP_LIST[CLIENT_ID-1], basePort+CLIENT_ID-1))
 
 # incase it was already part of /etc/truechain/local_config.py
 if not 'THREADING_ENABLED' in locals():
-    THREADING_ENABLED = config_yaml["testbed_config"]["threading_enabled"]
+    THREADING_ENABLED = config_yaml["testbed"]["threading_enabled"]
