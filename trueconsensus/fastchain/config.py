@@ -13,15 +13,15 @@ from logging.handlers import RotatingFileHandler
 try:
     CFG_ROOT = '/etc/truechain'
     sys.path.append(CFG_ROOT)
-    import local_config 
+    import local_config
     print("loaded local_config.py from %s" % CFG_ROOT)
-except ImportError:    
+except ImportError:
     print("Attempting to load local_config.py from %s" % CFG_ROOT)
     from trueconsensus import local_config
 except Exception as E:
     quit("Failed to load local_config.py!")
 
-from local_config import * 
+from local_config import *
 # CFG_YAML_PATH, \
 # CFG_GENERAL_PATH, \
 # PEER_NETWORK_FILE, \
@@ -123,14 +123,14 @@ IP_LIST = [l.strip() for l in network_file_content if l]
 KD = config_general.get("general", "pem_keystore_path")
 
 basePort = config_yaml["general"]["base_port"]
-N = config_yaml['testbed']['total'] - 1
+pbft_master_id = config_yaml['testbed']['total'] - 1
 
 CLIENT_ID = config_yaml["testbed"]["client_id"]
 
 # import pdb; pdb.set_trace()
 
 # replica list
-RL = [(l, basePort+i) for i, l in enumerate(IP_LIST[:N])]
+RL = [(l, basePort+i) for i, l in enumerate(IP_LIST[:pbft_master_id])]
 # We reserve the last IP as the client
 CLIENT_ADDRESS = ((IP_LIST[CLIENT_ID-1], basePort+CLIENT_ID-1))
 

@@ -109,3 +109,8 @@ caches/
 vendor/
 *.pem
 *.pub
+
+trueconsensus/ethereum
+docs/Make*
+docs/source/
+docs/make.bat

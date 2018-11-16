@@ -73,7 +73,7 @@ class Node(object):
     '''
 
     def __init__(self, _id, view, N, block_size=10,
-        committee_addresses=[], max_requests=None, max_retries=10):
+        committee_addresses=[], max_requests=None, max_retries=5):
         """
         @committee_addresses is a list of tuples containing the socket and ip addresses
         for all the nodes that are currently members of the committee
@@ -103,7 +103,7 @@ class Node(object):
         # hack
         self.clientbuff = bytes()
         self.clientlock = Lock()
-        self.grpc_channel_map = {}    
+        self.grpc_channel_map = {}
         self.block_size = block_size
         self.last_block_pool = []
         self.txpool = [] # actual txn pool filled from req received by the client
@@ -184,34 +184,30 @@ class Node(object):
         self.comm_dict = {}
 
     def unicast_message(self, _id, req, test_connection=False):
-        retries = 0
         channel = self.replica_map[_id]
         stub = request_pb2_grpc.FastChainStub(channel)
-        success = False
-        while retries <= self.max_requests:
-            # make the call and exit while loop, since this was just an INIT request
-            try:
-                if test_connection:
-                    response = stub.Check(req, timeout=self.timeout)
-                    # import pdb; pdb.set_trace()
-                    assert response.status is 200
-                    _logger.info("Node: [%s], Phase: [INIT], Msg: [Connected to Replica %d]" % (self._id, _id))
-                else:
-                    response = stub.Send(req)
-                success = True
-                break
-            except Exception as E:
-                _logger.error("gRPC channel for Node [%s] is not active. Retrying.. (%s)" % (_id, retries))
-                _logger.error("ErrorMsg => {%s}" % E)
-                retries += 1
-                time.sleep(1)
-        if retries > self.max_requests:
-            _logger.error("Node [%s], ErrorMsg: [Max retries reached], Target Replica: [%s]" % (self._id, _id))
-        if success:
-            _logger.info("Node [%s], Msg: [FastChainStub.Send()], Status: [200], Target Replica: [%s]" % (self._id, _id))
-            return True
-        else:
+        # make the call and exit while loop, since this was just an INIT request
+        try:
+            if test_connection:
+                # TODO: use of
+                response = stub.Check(req, timeout=self.timeout)
+                # import pdb; pdb.set_trace()
+                assert response.status is 200
+                _logger.info("Node: [%s], Phase: [INIT], Msg: [Connected to Replica %d]" % (self._id, _id))
+            else:
+                response = stub.Send(req)
+                assert response.status is 200
+                _logger.info("Node [%s], Msg: [FastChainStub.Send()], Status: [200], Target Replica: [%s]" % (self._id, _id))
+        except grpc.RpcError as E:
+            _logger.warn("Node [%s], Msg: gRPC channel %s, Target Replica: [%s] - Status: %s"
+                        % (self._id, E._state.code.name, _id, str(E._state.details)))
             return False
+        # catchall
+        except Exception as E:
+            _logger.warn("Node [%s], ErrorMsg => {%s}" % E)
+            return False
+
+        return True
 
     # TODO: include a failed send buffer, retry later
     def safe_send(self, node_id, req):
@@ -229,39 +225,73 @@ class Node(object):
                                                    str(counter))
         record(self.debuglog, msg)
 
-    def init_replica_map(self, grpc_obj):
+    def declare_committee_ambush(self):
+        quit()
+
+    def replace_faulty_replica(self):
+        # get elected members through VRF from SnailChain
+        # or call VRF if none are available
+        return
+
+    def init_replica_map(self, grpc_obj, retries=0):
         self.grpc_channel_map[self._id] = grpc_obj
         self.replica_map[self._id] = grpc_obj
-        # TODO: 
+        # TODO:
         # make this dynamic / event responsibe upon request of addition of new node (from BFT committee)
-        # Also, this should trigger check margin for valid minimum number of nodes to be present 
+        # Also, this should trigger check margin for valid minimum number of nodes to be present
         # to achieve BFT fault tolerance (N-1/3)
         replica_tracker = dict.fromkeys(range(self.N), False)
         replica_tracker[self._id] = True
-        for target_node in range(self.N):
-            if target_node == self._id:
-                continue
-            remote_ip, remote_port = RL[target_node]
-            channel = grpc.insecure_channel('%s:%s' % (remote_ip, remote_port))
-            self.replica_map[target_node] = channel
-            self.grpc_channel_map[target_node] = channel
-            # instantiate buffmap[] and outbuffmap[] as we just sent out init req, 
-            # which gets processed immediately. So that self.clean() doesn't act out
-            # self.incoming_buffer_map[target_node].append(None)
-            # self.outgoing_buffer_map[target_node].append(None)
-            m = self.create_request("INIT", 0, str(self._id).encode("utf-8"), target=target_node)
-            replica_tracker[target_node] = self.unicast_message(target_node, m, test_connection=True)
-            # msg = "init connection to replica %d" % i
+
+        while retries <= self.max_retries:
+            for target_node in range(self.N):
+                if target_node == self._id:
+                    continue
+                remote_ip, remote_port = RL[target_node]
+                channel = grpc.insecure_channel('%s:%s' % (remote_ip, remote_port))
+                self.replica_map[target_node] = channel
+                self.grpc_channel_map[target_node] = channel
+                # instantiate buffmap[] and outbuffmap[] as we just sent out init req,
+                # which gets processed immediately. So that self.clean() doesn't act out
+                # self.incoming_buffer_map[target_node].append(None)
+                # self.outgoing_buffer_map[target_node].append(None)
+                m = self.create_request("INIT", 0, str(self._id).encode("utf-8"), target=target_node)
+                replica_tracker[target_node] = self.unicast_message(target_node, m, test_connection=True)
+                # msg = "init connection to replica %d" % i
+
+            if not all(replica_tracker.values()):
+                # _logger.warn("Couldn't reach all replica in the list. Unreachable => {%s}" %
+                #     [i for i in replica_tracker if replica_tracker[i] is False])
+                retries += 1
+                time.sleep(1)
+            else:
+                break
+
+        if retries > self.max_retries:
+            # TODO
+            # if the replica are unreachable then hold committee election from pool
+            unreachable = [i for i in replica_tracker if
+                           replica_tracker[i] is False]
+            _logger.error("Couldn't reach all replica in the list. Unreachable"
+                          "=> {%s}" % unreachable)
+            _logger.error("Node [%s], ErrorMsg: [Max retries %s reached]"
+                          % (self._id, self.max_retries))
+
+        # TODO: further explot this variable by adding more useful information
+        # such as last contacted
         return replica_tracker
 
     # type, seq, message, (optional) tag request
-    def create_request(self, req_type, seq, msg, txpool=None, target=None, outer_req=None):
+    def create_request(self, req_type, seq, msg, txpool=None, target=None,
+                       outer_req=None):
         key = get_asymm_key(self._id, ktype="sign")
         if not bool(key):
-            _logger.error("Node: [%s], ErrorMsg => {get_asymm_key(): -> returned empty key}" % (self._id))
+            _logger.error("Node: [%s], ErrorMsg => {get_asymm_key():"
+                          "-> returned empty key}" % (self._id))
             return
         if req_type == "PRPR":
-            m = message.add_sig(key, self._id, seq, self.view, req_type, msg, txpool=txpool)
+            m = message.add_sig(key, self._id, seq, self.view,
+                                req_type, msg, txpool=txpool)
         else:
             m = message.add_sig(key, self._id, seq, self.view, req_type, msg)
         #     import pdb; pdb.set_trace()
@@ -284,8 +314,8 @@ class Node(object):
         while seq == self.last_executed + 1:
             waiting = False
             self.execute(r)
-            #e = exec_thread(self, r)
-            #e.start()
+            # e = exec_thread(self, r)
+            # e.start()
             self.last_executed += 1
             if seq+1 in self.waiting:
                 seq += 1
@@ -380,7 +410,7 @@ class Node(object):
 
     def process_init(self, req):
         """
-        adds gRPC channel instance to replica_map[req.inner.id] 
+        adds gRPC channel instance to replica_map[req.inner.id]
         and updates node history in log metadata
         """
         if req.inner.id < 0:
@@ -389,7 +419,7 @@ class Node(object):
         if req.inner.id not in self.replica_map:
             self.replica_map[req.inner.id] = self.grpc_channel_map[self._id]
         else:
-            # TODO: verify this check 
+            # TODO: verify this check
             # (why are we wanting to update/clean only when req ID is > self ID?)
             if req.inner.id > self._id:
                 self.clean(req.inner.id)
@@ -453,7 +483,7 @@ class Node(object):
                 except:
                     continue
 
-        _logger.debug("Node: [%s], Msg: [Prepared Items Length - %d], MessageType: [%s], Items => {%s}" % 
+        _logger.debug("Node: [%s], Msg: [Prepared Items Length - %d], MessageType: [%s], Items => {%s}" %
             (self._id, len(msg), type(msg), self.prepared))
         # import pdb; pdb.set_trace()
         m = self.create_request("VCHA", self.last_stable_checkpoint, msg.encode("utf-8"))
@@ -517,7 +547,7 @@ class Node(object):
             self.comm_dict[digest] = req_counter()
 
     # return true if we are exactly at the margin to make prepared(digest) true
-    # TODO: make this cleaner, 2*f isn't very convinving 
+    # TODO: make this cleaner, 2*f isn't very convinving
     def check_prepared_margin(self, digest, seq):
         try:
             if not self.prep_dict[digest].prepared:
@@ -913,7 +943,7 @@ class Node(object):
             if req.inner.seq not in self.node_message_log[req.inner.type]:
                 self.node_message_log[req.inner.type][req.inner.seq] = {req.inner.id : req}
             else:
-                # IF TYPE & SEQUENCE present, but not req.inner.id 
+                # IF TYPE & SEQUENCE present, but not req.inner.id
                 self.node_message_log[req.inner.type][req.inner.seq][req.inner.id] = req
 
     def in_node_history(self, req):
@@ -964,7 +994,7 @@ class Node(object):
                 # TODO: trigger view change
                 return
         if self.in_node_history(req):
-            _logger.warn("Node: [%s], Msg: [Duplicate node message], Duplicate: [%s]" % 
+            _logger.warn("Node: [%s], Msg: [Duplicate node message], Duplicate: [%s]" %
                 (self._id, req.inner.id))
         if req.inner.type in self.request_types and not self.in_client_history(req):
             # call to actual success

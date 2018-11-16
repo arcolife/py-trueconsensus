@@ -87,24 +87,19 @@ def write_new_keys(n):
     _logger.info(msg)
     return msg
 
+
 def get_asymm_key(i, ktype=None, result=None):
     kpath = get_key_path(i, ktype)
-    found_error = False
+    # import pdb; pdb.set_trace()
     try:
         if not os.path.isfile(kpath):
             result = "File Not Found: %s" % kpath
             _logger.error(result)
-            found_error = True
         else:
             key_pem = open(kpath, 'rb').read()
             result = ASYMM_FUNC_MAP[ktype](key_pem)
-    except Exception as result:
-        result = result
-        found_error = True
-
-    if found_error:
-        _logger.error("%s" % result)
-        return None
+    except Exception as err:
+        result = err
 
     return result
 #

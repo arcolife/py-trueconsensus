@@ -142,3 +142,15 @@ Or
 
 sed -n -e 's/^.*Phase: \(.*]\), .*/\1/p' /var/log/truechain/engine.log | sort | uniq
 ```
+
+# FAQ
+
+- Multi node testing on local node: How many possible ways?
+
+1. Ansible / chef / .. / ssh scripts
+2. tmux / screen / nohup / ..
+3. containers
+4. multi threading python (buggy with thread reentrancy issues, with all the debug messages going on)
+5. multi processing python (gunicorn)
+6. vms (vagrant, dind, machinectl/flatcar)
+7. webservers / RPCs

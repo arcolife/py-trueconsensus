@@ -23,7 +23,7 @@ import struct
 import time
 # import select
 from datetime import datetime
-import socket
+# import socket
 # from random import random
 from threading import Timer, active_count
 
@@ -34,7 +34,7 @@ from trueconsensus.fastchain.config import config_yaml, \
     THREADING_ENABLED, \
     CLIENT_ADDRESS, \
     _logger, \
-    N, \
+    pbft_master_id, \
     RL
 
 from trueconsensus.snailchain import SnailChain
@@ -134,31 +134,28 @@ class FastChainServicer(request_pb2_grpc.FastChainServicer):
 
 
 def suicide():
-    # import pdb; pdb.set_trace()
-    # sys.exit()
-    # quit()
+    """
+    #TODO
+    add code for trapping continue signal (custom code)
+    to avoid stopping the server.
+    """
     print("Active Thread Count: ", active_count())
-    os.kill(os.getpid(), signal.SIGINT)
+    print("End time: ", datetime.now())
+    # os.kill(os.getpid(), signal.SIGINT)
+    return
 
 def signal_handler(event, frame):
     sys.stdout.write("handling signal: %s\n" % event)
     sys.stdout.flush()
-    _logger.error("Kill signal (%s) detected. Stopping pbft.." % event)
-    countdown = 3  # seconds
-    print(" -- Active Thread Count: ", active_count())
-
+    countdown = 0  # seconds, TODO: configurable
     if event == signal.SIGINT:
         print("Committing deliberate suicide in %s seconds" % countdown)
-        print("Active Thread Count: ", active_count())
         t = Timer(countdown, suicide)
-        print("End time: ", datetime.now())
         t.start()
-        print("Active Thread Count: ", active_count())
         sys.exit(130)  # Ctrl-C for bash
 
 def init_grpc_server(_id):
     global RL
-    # import pdb; pdb.set_trace()
     try:
         ip, port = RL[_id]
     except IndexError as E:
@@ -168,6 +165,7 @@ def init_grpc_server(_id):
     request_pb2_grpc.add_FastChainServicer_to_server(FastChainServicer(), server)
     server.add_insecure_port('%s:%s' % (ip, port))
     server.start()
+    # import pdb; pdb.set_trace()
     msg = "Node: [%s], Msg: [Firing up gRPC channel], Address: [%s:%s]" % (_id, ip, port)
     print(msg)
     _logger.debug(msg)
@@ -202,7 +200,7 @@ class ThreadedExecution(InterruptableThread):
         n = node.Node(
             self._id,
             0,
-            N,
+            pbft_master_id,
             block_size=block_size,
             max_requests=config_yaml['testbed']['requests']['max'],
             max_retries=config_yaml['testbed']['max_retries']
@@ -236,7 +234,7 @@ class ThreadedExecution(InterruptableThread):
             # trigger events based on flags ?
             data = None
 
-            for target_node in range(N):
+            for target_node in range(pbft_master_id):
                 if target_node == self._id:
                     continue
 
@@ -283,42 +281,136 @@ class ThreadedExecution(InterruptableThread):
         sys.stdout.flush()
 
 
+def get_pbft_primary_replica():
+    # TODO
+    pass
+
+
 class NonThreadedExecution(object):
     '''
     Finds sockets that aren't busy and attempts to establish and
     launches test nodes as individual processes
     '''
     def __init__(self):
-        pass
+        signal.signal(signal.SIGINT, signal_handler)
+        signal.signal(signal.SIGTERM, signal_handler)
 
-    def init_server_socket(self, _id=None):
+    def init_server_socket(self, _id=0):
         """
         triggers setup using testbed. Increments given server id
         if that (ip, socket) from Replica List RL is already in use.
         """
-        global N
-        c = _id
-        while c < N:
+        while _id < pbft_master_id:
             s = None
             try:
-                s = init_grpc_server(c)
+                s = init_grpc_server(_id)
+                break
             except OSError as E:
-                _logger.error("%s -- Server ID: [%s]" % (E, c))
-                c -= 1
-            if s:
-                return s, c
+                _logger.error("%s -- while contending for Server ID: [%s]" % (E, c))
+                _id += 1
+        return s, _id
 
     def launch(self):
-        socket_obj, _id = self.init_server_socket(
-            _id=config_yaml["testbed"]["server_id_init"] - 1
-        )
-        n = node.Node(_id, 0, N,
-                      max_requests=config_yaml['testbed']['requests']['max'],
-                      max_retries=config_yaml['testbed']['max_retries'])
-        # n.init_keys(N)
-        n.init_replica_map(socket_obj)
-        n.server_loop()
+        _id = config_yaml["testbed"]["server_id_init"] -1
 
+        # currently a hack for mapping ID to IP:PORT availability
+        self.server, self._id = self.init_server_socket()
+
+        # this is overriden by the vacant server ID check in init_grpc_server() itself
+        # if self.server is None:
+        #     _logger.error("Unable to find free socket. Last tried id: %s" % _id)
+        #     return
+
+        block_size = config_yaml["bft_committee"]["block_size"]
+        # todo: find out primary N by election instead of hardcoding
+        n = node.Node(
+            self._id,
+            0,
+            pbft_master_id,
+            block_size=block_size,
+            max_requests=config_yaml['testbed']['requests']['max'],
+            max_retries=config_yaml['testbed']['max_retries']
+        )
+
+        global node_instances
+        node_instances[self._id] = n
+
+        global NODE_ID
+        NODE_ID = self._id
+
+        # n.init_replica_map(self.server)
+        replica_tracker = n.init_replica_map(self.server)
+
+        # if healthy replica above 2f+1 threshold  (33% fault tolerance)
+        # are up, continue to function as it would, normally
+        faulty = [i for i in replica_tracker if
+                  replica_tracker[i] is False]
+
+        if faulty:
+            healthy_nodes = [i for i in replica_tracker if
+                             replica_tracker[i] is True]
+            # TODO: if the ratio is nearing a failure, take actions
+            if len(healthy_nodes) < 2 * len(faulty) + 1:
+                n.declare_committee_ambush()
+                _logger.error("Committee corrupted. Faulty Node IDs:"
+                              "=> {%s}" % faulty)
+            # if the replica are unreachable then hold committee election
+            # from snailchain
+            # TODO: wait on furthre operations until committee replenished
+            n.replace_faulty_replica()
+
+        s = n.replica_map[n._id]
+        _logger.info("Node: [%s], Current Primary: [%s]" % (n._id, n.primary))
+        msg = "Node: [%s], Msg: [INIT SERVER LOOP]" % (n._id)
+        print(msg)
+        _logger.info(msg)
+        # t = Timer(5, n.try_client)
+        # t.start()
+
+        while True:
+            # trigger events based on flags ?
+            data = None
+
+            for target_node in range(N):
+                if target_node == self._id:
+                    continue
+
+                # send data
+                # TODO: send this reply to all slowchain members
+                if len(n.outgoing_buffer_map[target_node]) > 0:
+                    try:
+                        # TODO: integrate with config_yaml["bft_committee"]["block_frequency"]
+                        response = n.send_reply_to_client(target_node)
+                        n.outgoing_buffer_map[target_node].pop(-1)
+                        _logger.info("Node: [%s], Msg: [Block sent to client], Status: [%d], Response: [%s]"
+                            % (n._id, response.status, response.value))
+                        # new_txn = request_pb2.NewTxnRequest()
+                        # new_txn.data = message.gen_txn(nonce, price, gas_limit, _to, fee, asset_bytes)
+                    except IndexError:
+                        pass
+                    except:
+                        #raise
+                        n.clean(target_node)
+
+                # process outmap /inmap in the same loop?
+                if n.primary is n._id: #and n.invalid_primary is not True:
+                    while(len(n.txpool) > config_yaml["bft_committee"]["block_size"]):
+                        # if n.clear_for_next_block:
+                        # form a REQU type request from here on,
+                        # previously handled by generate_requests_dat script
+                        # req = message.add_sig(current_key, _id, seq, view, "REQU", msg, i)
+                        block_pool = n.txpool[-block_size:]
+                        n.process_client_request(block_pool)
+                        del n.txpool[-block_size:]
+                        n.last_block_pool = block_pool # but keep n.block_pool for backup
+                        # n.parse_request(n.incoming_buffer_map[target_node][-1])
+                        # n.incoming_buffer_map[target_node].pop(-1)
+                        # else:
+                        #     _logger.info("Node: [%s], Msg: [Block in Wait queue]" % (n._id))
+                        #     continue
+
+            time.sleep(4)
+            _logger.debug("Node: [%s], Waiting for next batch.." % (n._id))
 
 def main():
     print("Start time: ", datetime.now())
@@ -336,7 +428,7 @@ def main():
         # signal.signal(signal.SIGTERM, signal_handler)
         thread_pool = []
 
-        for _id in range(N):
+        for _id in range(pbft_master_id):
             # sys.stdout.write("Active Thread Count: ", active_count())
             node_instance = ThreadedExecution(_id)
             node_instance.start()
@@ -348,8 +440,6 @@ def main():
         sys.stdout.write("all exited\n")
         sys.stdout.flush()
     else:
-        signal.signal(signal.SIGINT, signal_handler)
-        signal.signal(signal.SIGTERM, signal_handler)
         NonThreadedExecution().launch()
 
     print("End time: ", datetime.now())

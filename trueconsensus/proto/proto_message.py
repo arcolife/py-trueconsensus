@@ -24,15 +24,16 @@ def gen_txn_data(txn_data):
     # v = "0x1c"
     # r = int(r, 16)
     # s = int(s, 16)
-    # v = int(v, 16)    
+    # v = int(v, 16)
     txn_data.AccountNonce = random.randint(1,999)
     txn_data.Price = random.randint(500, 1000)
     txn_data.GasLimit = random.randint(10000,50000)
     txn_data.Recipient = b'0xa593094cebb06bf34df7311845c2a34996b52324'
     txn_data.V = int("0x1c", 16)
+    import pdb; pdb.set_trace()
     txn_data.R = int("0xab90122dc4e4bbdbb14ef22ad3ae21aecc19a1c90a9c8989c68b26cc782ff303", 16)
     txn_data.S = int("0x36e5f275147049d3afd5d33b735cc9313d2c1aad3ab401aefdce678128e2f1d0", 16)
-    txn_data.Amount = random.randint(1,999) 
+    txn_data.Amount = random.randint(1,999)
     fin_entities = ["CDO", "CLO", "MBS", "ABS","CDS", "Derivative", "BDO"]
     payload = {
         "txnType": random.choice(fin_entities),
@@ -129,7 +130,7 @@ def check(key, req):
 #         response.status = send_ack(request.inner.id)
 #         # TODO: add request to node's outbuffmap and log this request
 #         return response
-    
+
 #     def Check(self, request, context):
 #         response = request_pb2.GenericResp()
 #         response.msg = request.inner.type

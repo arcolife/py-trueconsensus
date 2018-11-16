@@ -33,7 +33,7 @@ class GlobalInterruptableThreadHandler:
     @staticmethod
     def sig_handler(signum, frame):
         # sys.stdout.write("handling signal: %s\n" % signum)
-        # sys.stdout.write("Kill signal (%s) detected. Stopping BFT node.." % signum)
+        sys.stdout.write("Kill signal (%s) detected. Stopping BFT node.." % signum)
         # sys.exit(1)
 
         # countdown = 1
