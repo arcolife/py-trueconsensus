@@ -1,3 +1,12 @@
+### Call graph / stack call flow trace
+
+- https://pycallgraph.readthedocs.io/en/master/examples/basic.html
+or
+
+```
+$ py-spy --flame profile.svg --dump -- python -m trueconsensus.client 0 10
+```
+
 ### Errors
 
 Collection of sommon common errors while coding, for troubleshooting:

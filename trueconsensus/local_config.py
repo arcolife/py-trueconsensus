@@ -1,5 +1,3 @@
-import os
-
 CFG_YAML_PATH = "/etc/truechain/tunables.yaml"
 # CFG_YAML_PATH = os.path.join(os.path.expanduser('~'), "tunables.yaml")
 # CFG_YAML_PATH = "./trueconsensus/conf/tunables.yaml"
@@ -12,4 +10,6 @@ CFG_GENERAL_PATH = "/etc/truechain/logistics.cfg"
 PEER_NETWORK_FILE = "/etc/truechain/hosts"
 # PEER_NETWORK_FILE = os.path.join(os.path.expanduser('~'), "hosts")
 
-# THREADING_ENABLED = False
+TEST_MODE = True
+# various ways of executing in Local / test mode. This is turn
+# could be overriden by variables below

@@ -2,7 +2,7 @@
 # name: pbft base configuration
 testbed:
   total: 5 # excluding base client
-  client_id: 5 # total-1 => 0-indexed # TODO -> add threaded multi client request support, and check for id->seq consistency 
+  client_id: 5 # total-1 => 0-indexed # TODO -> add threaded multi client request support, and check for id->seq consistency
   server_id_init: 4 # N => 0 indexed
   threading_enabled: false
   max_retries: 5

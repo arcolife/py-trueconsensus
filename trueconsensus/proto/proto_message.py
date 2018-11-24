@@ -30,9 +30,9 @@ def gen_txn_data(txn_data):
     txn_data.GasLimit = random.randint(10000,50000)
     txn_data.Recipient = b'0xa593094cebb06bf34df7311845c2a34996b52324'
     txn_data.V = int("0x1c", 16)
-    import pdb; pdb.set_trace()
-    txn_data.R = int("0xab90122dc4e4bbdbb14ef22ad3ae21aecc19a1c90a9c8989c68b26cc782ff303", 16)
-    txn_data.S = int("0x36e5f275147049d3afd5d33b735cc9313d2c1aad3ab401aefdce678128e2f1d0", 16)
+    # import pdb; pdb.set_trace()
+    txn_data.R = int("0x6b90122dc4e4bbd", 16)
+    txn_data.S = int("0x7b90122dc4e4bbd3", 16)
     txn_data.Amount = random.randint(1,999)
     fin_entities = ["CDO", "CLO", "MBS", "ABS","CDS", "Derivative", "BDO"]
     payload = {
@@ -42,15 +42,15 @@ def gen_txn_data(txn_data):
     txn_data.payload = cbor.dumps(payload)
     return txn_data
 
-def add_sig(key, _id, seq, view, req_type, message, txpool=None, timestamp=None):
+def add_sig(key, _id, seq, view, req_type, txpool=None, timestamp=None):
     """
     @key
-    @_id
-    @seq
-    @view
-    @req_type
-    @message
-    @timestamp
+    @_id -> node id / address of sender of request
+    @seq -> sequence of message from that node _id
+    @view -> view (frame of reference for consistency) from that node _id
+    @req_type -> INIT, PPRP, etc..
+    @message -> contents of the packet/block
+    @timestamp -> should be epoch
     """
     #key = sig.get_signing_key(id)
     req = request_pb2.Request()
@@ -60,6 +60,7 @@ def add_sig(key, _id, seq, view, req_type, message, txpool=None, timestamp=None)
     inner.view = view
     inner.type = req_type
     if txpool:
+        # import pdb; pdb.set_trace()
         # use rlp and maybe change add_sig() to a class inheriting
         block = inner.block
         # txn = req.Transactions.add()

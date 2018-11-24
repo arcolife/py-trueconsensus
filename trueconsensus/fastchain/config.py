@@ -21,11 +21,10 @@ except ImportError:
 except Exception as E:
     quit("Failed to load local_config.py!")
 
-from local_config import *
-# CFG_YAML_PATH, \
-# CFG_GENERAL_PATH, \
-# PEER_NETWORK_FILE, \
-# THREADING_ENABLED
+from local_config import CFG_YAML_PATH, \
+                         CFG_GENERAL_PATH, \
+                         PEER_NETWORK_FILE, \
+                         TEST_MODE
 
 
 def load_config(path, no_val=False):
@@ -108,32 +107,34 @@ def setup_logger(log_type, fname):
 
 # main pbft logger
 _logger = setup_logger('engine', config_general.get("log", "server_logfile"))
-
 # client logger
 client_logger = setup_logger('client', config_general.get("log", "client_logfile"))
-
 config_yaml = load_yaml_config(CFG_YAML_PATH)
-
-# import pdb; pdb.set_trace()
-
-network_file_content = open(PEER_NETWORK_FILE, 'r').read().split('\n')
-IP_LIST = [l.strip() for l in network_file_content if l]
-# total = len(IP_LIST)
-
 KD = config_general.get("general", "pem_keystore_path")
+# pbft_master_id = config_yaml['testbed']['total'] - 1
+
 
 basePort = config_yaml["general"]["base_port"]
-pbft_master_id = config_yaml['testbed']['total'] - 1
 
-CLIENT_ID = config_yaml["testbed"]["client_id"]
-
-# import pdb; pdb.set_trace()
-
-# replica list
-RL = [(l, basePort+i) for i, l in enumerate(IP_LIST[:pbft_master_id])]
-# We reserve the last IP as the client
-CLIENT_ADDRESS = ((IP_LIST[CLIENT_ID-1], basePort+CLIENT_ID-1))
-
-# incase it was already part of /etc/truechain/local_config.py
-if not 'THREADING_ENABLED' in locals():
+# if 'TEST_MODE' in locals():
+#     RL = [address.split(":") for address in IP_LIST]
+#     CLIENT_ADDRESS = RL.pop()
+#     # incase it was already part of /etc/truechain/local_config.py
+#     if not 'THREADING_ENABLED' in locals():
+#         THREADING_ENABLED = config_yaml["testbed"]["threading_enabled"]
+if TEST_MODE:
+    network_file_content = open(PEER_NETWORK_FILE+'.csv', 'r').read().split('\n')
+    IP_LIST = [l.strip() for l in network_file_content if l]
+    RL = [address.split(":") for address in IP_LIST]
     THREADING_ENABLED = config_yaml["testbed"]["threading_enabled"]
+else:
+    network_file_content = open(PEER_NETWORK_FILE, 'r').read().split('\n')
+    IP_LIST = [l.strip() for l in network_file_content if l]
+    RL = [(ip, basePort) for ip in IP_LIST]
+    THREADING_ENABLED = False
+
+CLIENT_ADDRESS = RL.pop()
+CLIENT_ID = config_yaml["testbed"]["client_id"]  # public address essentially
+
+# We reserve the last IP as the client
+# CLIENT_ADDRESS = ((IP_LIST[CLIENT_ID-1], basePort+CLIENT_ID-1))

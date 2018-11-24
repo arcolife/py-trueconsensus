@@ -1,0 +1,1 @@
+gunicorn trueconsensus.engine:main --access-logfile /var/log/truechain/gunicorn.log --error-logfile /var/log/truechain/gunicorn_error.log --log-file /var/log/truechain/engine.log --log-level debug

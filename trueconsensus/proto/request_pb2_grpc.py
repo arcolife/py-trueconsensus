@@ -14,6 +14,12 @@ class FastChainStub(object):
     Args:
       channel: A grpc.Channel.
     """
+    # if
+    print(type(channel))
+    # if not isinstance(channel, grpc._channel.Channel):
+    # if isinstance(channel, grpc._server._Server):
+    #     import pdb; pdb.set_trace()
+
     self.NewTxnRequest = channel.unary_unary(
         '/fastchain.FastChain/NewTxnRequest',
         request_serializer=request__pb2.Transaction.SerializeToString,

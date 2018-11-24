@@ -15,8 +15,8 @@ service FastChain {
 service SerializerTest {
     rpc TestHash(TruePbftBlock) returns (Hash) {}
 }
- 
-// Hash result 
+
+// Hash result
 message Hash {
     bytes hash = 1;
     TruePbftBlock block = 2;
@@ -26,7 +26,7 @@ message Hash {
 // service Client {
 //         //RPC service that responds whether the node is the leader
 //         // rpc CheckLeader (CheckLeaderReq) returns (CheckLeaderResp) {}
-        
+
 //         //Send new transaction to presumed leader node
 //         rpc NewTxnRequest (Transaction) returns (GenericResp) {}
 // }
@@ -34,7 +34,7 @@ message Hash {
 service ClientReceiver {
     //RPC service that responds whether the node is the leader
     // rpc CheckLeader (CheckLeaderReq) returns (CheckLeaderResp) {}
-    
+
     //Send new transaction to presumed leader node
     rpc PbftReplyReceiver (TruePbftBlock) returns (Empty) {}
     rpc Check (GenericResp) returns (GenericResp) {}
@@ -86,15 +86,15 @@ message TxnData {
     int64  Amount 		 = 5; // value / 0 in case there's just BFT voting through VRF + csize + stake_in/out
     // Payload  payload		 = 6; // data, change this to bytes later
     bytes  payload		 = 6;
-    
+
     int64  V 			 = 7;
     int64  R			 = 8;
     int64  S			 = 9;
 
-    bytes Hash			 = 10; // ?? 
+    bytes Hash			 = 10; // ??
 }
 
-// there should be various payload types defined. 
+// there should be various payload types defined.
 // Protocol buffers picked up on the basis of request types
 
 message Payload  {
@@ -104,6 +104,7 @@ message Payload  {
 
 message Transaction {
     TxnData data 		 = 1;
+    // VRS hack below
     int32 dest             = 2; // momentary hack, succour for node_instances[NODE_ID]
     int32 source           = 3; // momentary hack, succour for node_instances[NODE_ID]
 }
@@ -121,7 +122,7 @@ message TruePbftBlock {
     TruePbftBlockHeader   header    = 1;
     repeated Transaction      Transactions      = 2;
     repeated TruePbftBlockHeader uncles = 3;
-    repeated string   sig     = 4;   
+    repeated string   sig     = 4;
 }
 
 message TruePbftNode {

@@ -60,7 +60,7 @@ Download and install [google protobuf](https://github.com/google/protobuf/tree/m
 
 ```
 # brew install protobuf
-OR 
+OR
 # pip install protobuf
 ```
 
@@ -109,7 +109,7 @@ python -m trueconsensus.utils.make_keys
 # generate requests
 python -m trueconsensus.utils.generate_requests_dat
 
-# test your installation with 
+# test your installation with
 python -m trueconsensus
 ```
 
@@ -119,18 +119,26 @@ Server: `./minerva.py`
 
 Client: `python -m trueconsensus.client`
 
+#### Using tmux for multi node without threading
+
+```
+tmux kill-session -t truec
+./tmux-sessions.sh
+tmux -2 attach-session -t truec
+```
+
 ### Monitor logs
 
 Client logs in terminal:
 
 ```
-tail -f /var/log/truechain.client.log 
+tail -f /var/log/truechain.client.log
 ```
 
 Server logs in another terminal:
 
 ```
-tail -f /var/log/truechain/engine.log 
+tail -f /var/log/truechain/engine.log
 ```
 
 To check all the phases encountered in the log:

@@ -42,12 +42,12 @@ class Bank:
         if _type == "TRAN":
             if ammount > self.accounts[src]:
                 m = message.add_sig(
-                    key, 
-                    _id, 
-                    seq, 
-                    req.inner.view, 
-                    "RESP", 
-                    bytes("INVALID", encoding="utf-8"), 
+                    key,
+                    _id,
+                    seq,
+                    req.inner.view,
+                    "RESP",
+                    bytes("INVALID", encoding="utf-8"),
                     req.inner.timestamp
                 )
                 #print "transfer request invalid"
@@ -56,11 +56,11 @@ class Bank:
                 self.accounts[src] = self.accounts[src] - ammount
                 self.accounts[dest] = self.accounts[dest] + ammount
                 m = message.add_sig(
-                    key, 
-                    id, 
-                    seq, 
-                    req.inner.view, 
-                    "RESP",bytes("APPROVED", encoding="utf-8"), 
+                    key,
+                    id,
+                    seq,
+                    req.inner.view,
+                    "RESP",bytes("APPROVED", encoding="utf-8"),
                     req.inner.timestamp
                 )
                 #print "transfer request approved"
@@ -103,20 +103,19 @@ class Users(object):
                 'ledger_for_node_%s' % node_id
             )
         return ledger_loc
-        
+
     def open_db_conn(self, node_id=None):
         try:
             self.db = plyvel.DB(
-                self.retrieve_ledger_loc(node_id=node_id), 
+                self.retrieve_ledger_loc(node_id=node_id),
                 create_if_missing=True
             )
         except Exception as E:
             client_logger.error(E)
             return
 
-        client_logger.debug("Msg: [Opened Database connection..], ForNode: [%s]" 
+        client_logger.debug("Msg: [Opened Database connection..], ForNode: [%s]"
             % node_id)
-
 
     def close_db_conn(self):
         try:
@@ -144,7 +143,7 @@ class Users(object):
                 acc_name = bytes("customer_%s" % cust_id, encoding='utf-8')
                 acc_price = bytes(str(random.randint(1, n)), encoding='utf-8')
                 self.db.put(acc_name, acc_price)
-                # TODO: add to log ledger, the txn info 
+                # TODO: add to log ledger, the txn info
                 pass
         except Exception as E:
             client_logger.error(E)
